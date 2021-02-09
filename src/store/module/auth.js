@@ -22,6 +22,7 @@ const actions = {
         axios.get('/api/user', payload).then(response => {
           console.log(response.data)
           commit('authLogin', response.data)
+          window.location.reload()
         }).catch(error => console.log(error)) // credentials didn't match
       }).catch(error => console.log(error)) // credentials didn't match
     })
@@ -29,8 +30,15 @@ const actions = {
   async register ({ state, commit }, payload) {
     console.log(payload.data)
     axios.get('/sanctum/csrf-cookie').then(response => {
-      axios.post('/register', payload.data).then(response => {
+      axios.post('/api/register', payload.data).then(response => {
         console.log('registered!!!!')
+      }).catch(error => console.log(error)) // credentials didn't match
+    })
+  },
+  logout ({ state, commit }, payload) {
+    axios.get('/sanctum/csrf-cookie').then(response => {
+      axios.get('/api/logout').then(response => {
+        console.log('logout!!!!')
       }).catch(error => console.log(error)) // credentials didn't match
     })
   }

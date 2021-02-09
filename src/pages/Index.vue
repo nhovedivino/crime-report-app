@@ -39,9 +39,11 @@
               label="Type of Crime *"
               placeholder="Enter type of crime"
               v-model="formData.crime_id"
+              lazy-rules
+              :rules="[val => !!val || 'Field is required']"
             />
 
-            <q-input
+            <!-- <q-input
               ref="crime_date"
               label="Date of Crime *"
               stack-label
@@ -50,7 +52,7 @@
               lazy-rules
               hint="Tap the icon to select"
               :rules="[ val => val && val.length > 0 || 'This field is required.']"
-            />
+            /> -->
 
             <q-input
               v-if="onChangeValue"
@@ -65,6 +67,8 @@
               type="textarea"
               placeholder="Enter event details"
               v-model="formData.event_detail"
+              lazy-rules
+              :rules="[val => !!val || 'Field is required']"
             />
 
             <q-input
@@ -73,6 +77,8 @@
               type="textarea"
               placeholder="Enter action taken"
               v-model="formData.action_taken"
+              lazy-rules
+              :rules="[val => !!val || 'Field is required']"
             />
 
             <q-input
@@ -81,7 +87,27 @@
               type="textarea"
               placeholder="Enter summary"
               v-model="formData.summary"
+              lazy-rules
+              :rules="[val => !!val || 'Field is required']"
             />
+
+            <q-file @change="imgChange" accept=".jpg, image/*" filled bottom-slots v-model="formData.img" label="Upload Image" counter>
+              <template v-slot:prepend>
+                <q-icon name="cloud_upload" @click.stop />
+              </template>
+              <template v-slot:append>
+                <q-icon name="close" @click.stop="model = null" class="cursor-pointer" />
+              </template>
+            </q-file>
+
+            <!-- <q-file filled bottom-slots v-model="formData.video" label="Upload Video" counter>
+              <template v-slot:prepend>
+                <q-icon name="cloud_upload" @click.stop />
+              </template>
+              <template v-slot:append>
+                <q-icon name="close" @click.stop="model = null" class="cursor-pointer" />
+              </template>
+            </q-file> -->
 
             <div class="actions md-layout md-alignment-center">
               <q-btn color="green" @click="showDialog" :loading="loading" label="Submit" />
@@ -127,64 +153,97 @@ export default {
         focus_crime_type: '',
         event_detail: '',
         action_taken: '',
-        summary: ''
+        summary: '',
+        img: '',
+        video: ''
+      },
+      imageFile: '',
+      img: {
+        url: '',
+        thumb_url: '',
+        uploader: '',
+        extension: '',
+        title: ''
       }
     }
   },
   methods: {
+    imgChange (event) {
+      alert('sada')
+      this.imageFile = event.target.files[0]
+      this.img.url = URL.createObjectURL(this.imageFile)
+      this.img.file_type = event.target.files[0].type
+    },
     showDialog () {
       this.alert = true
     },
     onSubmit () {
+      const formData = new FormData()
       const crime = this.crime_type.filter(x => x.type === this.formData.crime_id)
-      const form = {
-        crime_id: crime[0].id,
-        complainant_id: this.user_details.id,
-        reporting_id: this.user_details.id,
-        prepared_id: this.user_details.id,
-        crime_date: this.formData.crime_date,
-        focus_crime_type: this.formData.focus_crime_type,
-        event_detail: this.formData.event_detail,
-        action_taken: this.formData.action_taken,
-        summary: this.formData.summary,
-        long: this.long,
-        lat: this.lat,
-        is_witness: this.is_witness ? 1 : 0
-      }
+      console.log(this.imageFile)
+      formData.append('crime_id', crime[0].id)
+      formData.append('complaint_id', this.user_details.id)
+      formData.append('reported_by', this.user_details.first_name + ' ' + this.user_details.last_name)
+      formData.append('prepared_id', this.user_details.id)
+      formData.append('focus_crime_type', this.formData.focus_crime_type)
+      formData.append('event_detail', this.formData.event_detail)
+      formData.append('action_taken', this.formData.action_taken)
+      formData.append('summary', this.formData.summary)
+      formData.append('long', this.long)
+      formData.append('lat', this.lat)
+      formData.append('is_witness', this.is_witness ? 1 : 0)
+      formData.append('img', this.imageFile)
+      // formData.append('video', this.formData.video)
 
-      this.$refs.crime_id.validate()
-      this.$refs.crime_date.validate()
-      this.$refs.event_detail.validate()
-      this.$refs.action_taken.validate()
-      this.$refs.summary.validate()
+      // console.log(formData)
+      // const crime = this.crime_type.filter(x => x.type === this.formData.crime_id)
+      // const form = {
+      //   crime_id: crime[0].id,
+      //   complaint_id: this.user_details.id,
+      //   reported_by: this.user_details.first_name + ' ' + this.user_details.last_name,
+      //   prepared_id: this.user_details.id,
+      //   focus_crime_type: this.formData.focus_crime_type,
+      //   event_detail: this.formData.event_detail,
+      //   action_taken: this.formData.action_taken,
+      //   summary: this.formData.summary,
+      //   long: this.long,
+      //   lat: this.lat,
+      //   is_witness: this.is_witness ? 1 : 0,
+      //   img: this.formData.img
+      //   // video: this.formData.video
+      // }
 
-      if (this.$refs.crime_id.hasError || this.$refs.crime_date.hasError || this.$refs.event_detail.hasError || this.$refs.action_taken.hasError || this.$refs.summary.hasError) {
-        alert('saafaf')
-        this.formHasError = true
-      } else {
-        this.loading = true
-        this.$store.dispatch('crime/reportCrime', { data: this.form })
-          .then(() => {
-            this.loading = false
-            this.$q.notify({
-              icon: 'done',
-              color: 'positive',
-              message: 'Report submitted successfully.',
-              position: 'top'
-            })
-          })
-          .catch(error => {
-            this.loading = false
-            this.$q.notify({
-              message: 'Something went wrong!',
-              color: 'red',
-              position: 'top'
-            })
-            throw new Error(error)
-          })
-      }
+      // this.$refs.crime_id.validate()
+      // this.$refs.event_detail.validate()
+      // this.$refs.action_taken.validate()
+      // this.$refs.summary.validate()
 
-      console.log(form)
+      // if (this.$refs.crime_id.hasError || this.$refs.event_detail.hasError || this.$refs.action_taken.hasError || this.$refs.summary.hasError) {
+      //   this.formHasError = true
+      // } else {
+      //   this.loading = true
+      //   this.$store.dispatch('crime/reportCrime', { data: formData })
+      //     .then(() => {
+      //       this.loading = false
+      //       this.$q.notify({
+      //         icon: 'done',
+      //         color: 'positive',
+      //         message: 'Report submitted successfully.',
+      //         position: 'top'
+      //       })
+      //     })
+      //     .catch(error => {
+      //       this.loading = false
+      //       this.$q.notify({
+      //         message: 'Something went wrong!',
+      //         color: 'red',
+      //         position: 'top'
+      //       })
+      //       throw new Error(error)
+      //     })
+      // }
+
+      // console.log(form)
       this.alert = false
     },
     onReset () {
@@ -232,7 +291,7 @@ export default {
       crime_type: 'crime_type'
     }),
     onChangeValue () {
-      if (this.formData.crime_id === 'Focus Crime') {
+      if (this.formData.crime_id === 'Focus Crimes') {
         return true
       }
       return false

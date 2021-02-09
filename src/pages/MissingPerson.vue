@@ -1,37 +1,15 @@
 <template>
-  <div class="centered-container">
-    <md-content class="md-elevation-3">
-
-      <div class="title">
-        <img alt="sto nino Logo" src="~assets/sto_nino_logo.png">
-        <div class="md-title">Online Crime Report</div>
-        <div class="md-body-1">(Brgy. Sto. Niño, Panabo City)</div>
-      </div>
-
-      <div class="form">
-        <md-field>
-          <label>Email</label>
-          <md-input autofocus v-model="login.email"></md-input>
-        </md-field>
-
-        <md-field md-has-password>
-          <label>Password</label>
-          <md-input v-model="login.password" type="password"></md-input>
-        </md-field>
-
-        <a href="/#/register">Register</a>
-      </div>
-
-      <div class="actions md-layout md-alignment-center">
-        <md-button class="md-raised md-primary" @click="auth">Log in</md-button>
-      </div>
-
-      <div class="loading-overlay" v-if="loading">
-        <md-progress-spinner md-mode="indeterminate" :md-stroke="2"></md-progress-spinner>
-      </div>
-
-    </md-content>
-    <div class="background" />
+  <div class="q-pa-md flex flex-center">
+    <div class="q-pa-md">
+      <q-table
+      title="Treats"
+      :data="data"
+      :columns="columns"
+      row-key="name"
+      :sort-method="customSort"
+      binary-state-sort
+      />
+  </div>
   </div>
 </template>
 
@@ -40,61 +18,40 @@ import Vue from 'vue'
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
-// import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 
 Vue.use(VueMaterial)
 
 export default {
-  name: 'Login',
+  name: 'PageIndex',
   data () {
     return {
-      loading: false,
-      login: {
-        email: '',
-        password: ''
-      }
+      columns: [
+        {
+          name: 'name',
+          required: true,
+          label: 'Dessert (100g serving)',
+          align: 'left',
+          field: row => row.name,
+          format: val => `${val}`,
+          sortable: true
+        },
+        { name: 'calories', align: 'center', label: 'Calories', field: 'calories', sortable: true },
+        { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
+        { name: 'carbs', label: 'Carbs (g)', field: 'carbs', sortable: true },
+        { name: 'protein', label: 'Protein (g)', field: 'protein', sortable: true },
+        { name: 'sodium', label: 'Sodium (mg)', field: 'sodium', sortable: true },
+        { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
+        { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
+      ]
     }
   },
   created () {
+    this.getMissingPerson()
   },
   methods: {
-    auth () {
-      if (this.login.user !== '' && this.login.password !== '') {
-        // your code to login user
-        // this is only for example of loading
-        this.loading = true
-        this.$store.dispatch('auth/authLogin', {
-          email: this.login.email,
-          password: this.login.password
-        })
-          .then(() => {
-            this.loading = false
-            this.$router.push('main')
-          })
-          .catch(error => {
-            this.loading = false
-            this.$q.notify({
-              message: 'Invalid credentials!',
-              color: 'red',
-              position: 'top'
-            })
-            throw new Error(error)
-          })
-      } else {
-        this.$q.notify({
-          message: 'Please fill all the fields.',
-          color: 'red',
-          position: 'top'
-        })
-      }
-      // this.$router.push('/main')
-    }
+    //  
   }
-  // computed: {
-  //   ...mapGetters('auth', {
-  //     user_details: 'user_details'
-  //   })
-  // }
 }
 </script>
 

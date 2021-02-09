@@ -2,14 +2,14 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar style="background-color: #21ba45">
-        <!-- <q-btn
+        <q-btn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
-        /> -->
+        />
 
         <q-toolbar-title>
           Online Crime Report
@@ -50,7 +50,7 @@
       </q-toolbar>
     </q-header>
 
-    <!-- <q-drawer
+    <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
@@ -69,7 +69,7 @@
           v-bind="link"
         />
       </q-list>
-    </q-drawer> -->
+    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -79,17 +79,44 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import EssentialLink from 'components/EssentialLink.vue'
+
+const linksData = [
+  {
+    title: 'Report Crime',
+    icon: 'school',
+    link: '/'
+  },
+  {
+    title: 'Missing Person',
+    icon: 'code',
+    link: '/missing-person'
+  },
+  {
+    title: 'Most Wanted',
+    icon: 'chat',
+    link: 'most-wanted'
+  },
+  {
+    title: 'Lost and Found',
+    icon: 'record_voice_over',
+    link: 'lost-and-found'
+  }
+]
+
 export default {
   name: 'MainLayout',
-  // components: { EssentialLink },
+  components: { EssentialLink },
   data () {
     return {
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
+      essentialLinks: linksData
     }
   },
   methods: {
     logout () {
       localStorage.removeItem('vuex')
+      this.$store.dispatch('auth/logout')
       this.$router.push('/')
     }
   },

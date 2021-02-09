@@ -26,7 +26,7 @@ const actions = {
     console.log(payload.data)
     axios.get('/sanctum/csrf-cookie').then(response => {
       axios.post('/api/report', payload.data).then(response => {
-        console.log('report succes')
+        console.log(response)
       }).catch(error => console.log(error)) // credentials didn't match
     })
   }
