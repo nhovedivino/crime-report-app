@@ -84,22 +84,22 @@ import EssentialLink from 'components/EssentialLink.vue'
 const linksData = [
   {
     title: 'Report Crime',
-    icon: 'school',
-    link: '/'
+    icon: 'assignment',
+    link: '/main'
   },
   {
     title: 'Missing Person',
-    icon: 'code',
+    icon: 'person',
     link: '/missing-person'
   },
   {
     title: 'Most Wanted',
-    icon: 'chat',
+    icon: 'person',
     link: 'most-wanted'
   },
   {
     title: 'Lost and Found',
-    icon: 'record_voice_over',
+    icon: 'contact_page',
     link: 'lost-and-found'
   }
 ]
@@ -112,6 +112,8 @@ export default {
       leftDrawerOpen: false,
       essentialLinks: linksData
     }
+  },
+  created () {
   },
   methods: {
     logout () {

@@ -1,123 +1,18 @@
 <template>
-  <div class="q-pa-md flex flex-center">
-    <md-content class="md-elevation-3" style="width: 100% !important">
+  <div class="q-pa-md flex flex-center q-pa-md row items-start q-gutter-md">
+    <q-card v-for="(data, index) in wanteds.data" :key="index" class="my-card">
+      <img src="https://cdn.quasar.dev/img/mountains.jpg">
 
-      <q-dialog v-model="alert">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">Confirmation</div>
-          </q-card-section>
+      <q-card-section>
+        <div class="text-h6">Crime: {{ data.crime.type }}</div>
+        <div class="text-subtitle2">Status: {{ data.status.status }}</div>
+        <div class="text-subtitle2">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name}}</div>
+      </q-card-section>
 
-          <q-card-section class="q-pt-none">
-            <q-checkbox size="xl" v-model="is_witness" val="xl" label="In order to proceed, please check the box if you want to be the witness of this report." />
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" v-close-popup />
-            <q-btn flat label="Proceed" :disable="!is_witness" @click="onSubmit" color="primary" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <q-card class="my-card">
-        <q-card-section>
-
-          <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
-            <div class="title text-center q-gutter-md">
-              <div class="md-title">Report Crime</div>
-            </div>
-
-            <q-select
-              @input="onChangeValue"
-              option-value="type"
-              option-label="type"
-              :options="crime_type"
-              emit-value
-              map-options
-              ref="crime_id"
-              :dense="dense"
-              label="Type of Crime *"
-              placeholder="Enter type of crime"
-              v-model="formData.crime_id"
-              lazy-rules
-              :rules="[val => !!val || 'Field is required']"
-            />
-
-            <q-input
-              ref="crime_date"
-              label="Name of Missing/Lost and Found Person/Wanted/Suspect"
-              type="date"
-              v-model="formData.name"
-            />
-
-            <q-input
-              v-if="onChangeValue"
-              ref="focus_crime_type"
-              label="Focus type of crime *"
-              v-model="formData.focus_crime_type"
-            />
-
-            <q-input
-              ref="event_detail"
-              label="Event Detail"
-              type="textarea"
-              placeholder="Enter event details"
-              v-model="formData.event_detail"
-              lazy-rules
-              :rules="[val => !!val || 'Field is required']"
-            />
-
-            <q-input
-              ref="action_taken"
-              label="Action Taken"
-              type="textarea"
-              placeholder="Enter action taken"
-              v-model="formData.action_taken"
-              lazy-rules
-              :rules="[val => !!val || 'Field is required']"
-            />
-
-            <q-input
-              ref="summary"
-              label="Summary"
-              type="textarea"
-              placeholder="Enter summary"
-              v-model="formData.summary"
-              lazy-rules
-              :rules="[val => !!val || 'Field is required']"
-            />
-
-            <q-file @change="imgChange" accept=".jpg, image/*" filled bottom-slots v-model="formData.img" label="Upload Image" counter>
-              <template v-slot:prepend>
-                <q-icon name="cloud_upload" @click.stop />
-              </template>
-              <template v-slot:append>
-                <q-icon name="close" @click.stop="model = null" class="cursor-pointer" />
-              </template>
-            </q-file>
-
-            <!-- <q-file filled bottom-slots v-model="formData.video" label="Upload Video" counter>
-              <template v-slot:prepend>
-                <q-icon name="cloud_upload" @click.stop />
-              </template>
-              <template v-slot:append>
-                <q-icon name="close" @click.stop="model = null" class="cursor-pointer" />
-              </template>
-            </q-file> -->
-
-            <div class="actions md-layout md-alignment-center">
-              <q-btn color="green" @click="showDialog" :loading="loading" label="Submit" />
-            </div>
-          </form>
-        </q-card-section>
-      </q-card>
-
-      <!-- <div class="actions md-layout md-alignment-center">
-        <md-button class="md-raised md-primary" @click="auth">Submit</md-button>
-      </div> -->
-
-    </md-content>
-    <div class="background" />
+      <q-card-section class="q-pt-none">
+        {{ data.event_detail }}
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 
@@ -131,169 +26,24 @@ import { mapGetters } from 'vuex'
 Vue.use(VueMaterial)
 
 export default {
-  name: 'PageIndex',
+  name: 'MostWanted',
   data () {
     return {
-      is_witness: false,
-      alert: false,
-      isPwd: true,
-      dense: false,
-      loading: false,
-      long: '',
-      lat: '',
-      crime: {},
-      formData: {
-        crime_id: '',
-        last_name: '',
-        birth_date: '',
-        focus_crime_type: '',
-        event_detail: '',
-        action_taken: '',
-        summary: '',
-        img: '',
-        video: '',
-        name: ''
-      },
-      imageFile: '',
-      img: {
-        url: '',
-        thumb_url: '',
-        uploader: '',
-        extension: '',
-        title: ''
-      }
-    }
-  },
-  methods: {
-    imgChange (event) {
-      alert('sada')
-      this.imageFile = event.target.files[0]
-      this.img.url = URL.createObjectURL(this.imageFile)
-      this.img.file_type = event.target.files[0].type
-    },
-    showDialog () {
-      this.alert = true
-    },
-    onSubmit () {
-      const formData = new FormData()
-      const crime = this.crime_type.filter(x => x.type === this.formData.crime_id)
-      console.log(this.imageFile)
-      formData.append('crime_id', crime[0].id)
-      formData.append('complaint_id', this.user_details.id)
-      formData.append('reported_by', this.user_details.first_name + ' ' + this.user_details.last_name)
-      formData.append('name', this.formData.name)
-      formData.append('prepared_id', this.user_details.id)
-      formData.append('focus_crime_type', this.formData.focus_crime_type)
-      formData.append('event_detail', this.formData.event_detail)
-      formData.append('action_taken', this.formData.action_taken)
-      formData.append('summary', this.formData.summary)
-      formData.append('long', this.long)
-      formData.append('lat', this.lat)
-      formData.append('is_witness', this.is_witness ? 1 : 0)
-      formData.append('img', this.imageFile)
-      // formData.append('video', this.formData.video)
-
-      // console.log(formData)
-      // const crime = this.crime_type.filter(x => x.type === this.formData.crime_id)
-      // const form = {
-      //   crime_id: crime[0].id,
-      //   complaint_id: this.user_details.id,
-      //   reported_by: this.user_details.first_name + ' ' + this.user_details.last_name,
-      //   prepared_id: this.user_details.id,
-      //   focus_crime_type: this.formData.focus_crime_type,
-      //   event_detail: this.formData.event_detail,
-      //   action_taken: this.formData.action_taken,
-      //   summary: this.formData.summary,
-      //   long: this.long,
-      //   lat: this.lat,
-      //   is_witness: this.is_witness ? 1 : 0,
-      //   img: this.formData.img
-      //   // video: this.formData.video
-      // }
-
-      // this.$refs.crime_id.validate()
-      // this.$refs.event_detail.validate()
-      // this.$refs.action_taken.validate()
-      // this.$refs.summary.validate()
-
-      // if (this.$refs.crime_id.hasError || this.$refs.event_detail.hasError || this.$refs.action_taken.hasError || this.$refs.summary.hasError) {
-      //   this.formHasError = true
-      // } else {
-      //   this.loading = true
-      //   this.$store.dispatch('crime/reportCrime', { data: formData })
-      //     .then(() => {
-      //       this.loading = false
-      //       this.$q.notify({
-      //         icon: 'done',
-      //         color: 'positive',
-      //         message: 'Report submitted successfully.',
-      //         position: 'top'
-      //       })
-      //     })
-      //     .catch(error => {
-      //       this.loading = false
-      //       this.$q.notify({
-      //         message: 'Something went wrong!',
-      //         color: 'red',
-      //         position: 'top'
-      //       })
-      //       throw new Error(error)
-      //     })
-      // }
-
-      // console.log(form)
-      this.alert = false
-    },
-    onReset () {
-      this.formData.crime_id = null
-      this.formData.last_name = null
-      this.formData.birth_date = null
-      this.formData.focus_crime_type = null
-      this.formData.action_taken = null
-      this.formData.summary = null
-
-      this.$refs.crime_id.resetValidation()
-      this.$refs.last_name.resetValidation()
-      this.$refs.birth_date.resetVlidation()
-      this.$refs.focus_crime_type.resetValidation()
-      this.$refs.action_taken.resetValidation()
-      this.$refs.summary.resetValidation()
-    },
-    getLocation () {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          this.long = pos.coords.longitude
-          this.lat = pos.coords.latitude
-        })
-      } else {
-        this.$q.notify({
-          message: 'Geolocation is not supported by this browser.',
-          color: 'red',
-          position: 'top'
-        })
-      }
-    },
-    getTypeOfCrimes () {
-      this.$store.dispatch('crime/getTypeOfCrimes')
+      //
     }
   },
   created () {
-    this.getLocation()
-    this.getTypeOfCrimes()
+    this.getWanted()
+  },
+  methods: {
+    getWanted () {
+      this.$store.dispatch('wanted/getWanted')
+    }
   },
   computed: {
-    ...mapGetters('auth', {
-      user_details: 'user_details'
-    }),
-    ...mapGetters('crime', {
-      crime_type: 'crime_type'
-    }),
-    onChangeValue () {
-      if (this.formData.crime_id === 'Focus Crimes') {
-        return true
-      }
-      return false
-    }
+    ...mapGetters('wanted', {
+      wanteds: 'wanteds'
+    })
   }
 }
 </script>

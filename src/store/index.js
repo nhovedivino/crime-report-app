@@ -4,6 +4,9 @@ import createPersistedState from 'vuex-persistedstate'
 
 import auth from './module/auth'
 import crime from './module/crime'
+import lost from './module/lost'
+import missing from './module/missing'
+import wanted from './module/wanted'
 
 // import example from './module-example'
 
@@ -22,7 +25,10 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       auth,
-      crime
+      crime,
+      lost,
+      missing,
+      wanted
     },
     plugins: [
       createPersistedState()

@@ -12,11 +12,10 @@ const routes = [
     path: '/main',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
-      // { path: '/beneficiaries', component: () => import('pages/Beneficiary.vue') },
-      // { path: '/school-grantees', component: () => import('pages/SchoolGrantee.vue') },
-      // { path: '/health-grantees', component: () => import('pages/HealthGrantee.vue') },
-      // { path: '/dismissed', component: () => import('pages/Dismissed.vue') }
+      { path: '', component: () => import('pages/Index.vue') },
+      { path: '/missing-person', component: () => import('pages/MissingPerson.vue') },
+      { path: '/lost-and-found', component: () => import('pages/LostAndFound.vue') },
+      { path: '/most-wanted', component: () => import('pages/MostWanted.vue') }
     ]
   },
   {

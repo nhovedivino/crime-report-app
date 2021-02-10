@@ -1,15 +1,18 @@
 <template>
-  <div class="q-pa-md flex flex-center">
-    <div class="q-pa-md">
-      <q-table
-      title="Treats"
-      :data="data"
-      :columns="columns"
-      row-key="name"
-      :sort-method="customSort"
-      binary-state-sort
-      />
-  </div>
+  <div class="q-pa-md flex flex-center q-pa-md row items-start q-gutter-md">
+    <q-card v-for="(data, index) in missing_persons.data" :key="index" class="my-card">
+      <img src="https://cdn.quasar.dev/img/mountains.jpg">
+
+      <q-card-section>
+        <div class="text-h6">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name }}</div>
+        <!-- <div class="text-subtitle2">Status: {{ data.status.status }}</div>
+        <div class="text-subtitle2">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name}}</div> -->
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        {{ data.event_detail }}
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 
@@ -23,34 +26,44 @@ import { mapGetters } from 'vuex'
 Vue.use(VueMaterial)
 
 export default {
-  name: 'PageIndex',
+  name: 'MissingPerson',
   data () {
     return {
-      columns: [
-        {
-          name: 'name',
-          required: true,
-          label: 'Dessert (100g serving)',
-          align: 'left',
-          field: row => row.name,
-          format: val => `${val}`,
-          sortable: true
-        },
-        { name: 'calories', align: 'center', label: 'Calories', field: 'calories', sortable: true },
-        { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
-        { name: 'carbs', label: 'Carbs (g)', field: 'carbs', sortable: true },
-        { name: 'protein', label: 'Protein (g)', field: 'protein', sortable: true },
-        { name: 'sodium', label: 'Sodium (mg)', field: 'sodium', sortable: true },
-        { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
-      ]
+      //
     }
   },
   created () {
     this.getMissingPerson()
   },
   methods: {
-    //  
+    getMissingPerson () {
+      this.$store.dispatch('missing/getMissingPerson')
+    },
+    customSort (rows, sortBy, descending) {
+      const data = [...rows]
+
+      if (sortBy) {
+        data.sort((a, b) => {
+          const x = descending ? b : a
+          const y = descending ? a : b
+
+          if (sortBy === 'name') {
+            // string sort
+            return x[sortBy] > y[sortBy] ? 1 : x[sortBy] < y[sortBy] ? -1 : 0
+          } else {
+            // numeric sort
+            return parseFloat(x[sortBy]) - parseFloat(y[sortBy])
+          }
+        })
+      }
+
+      return data
+    }
+  },
+  computed: {
+    ...mapGetters('missing', {
+      missing_persons: 'missing_persons'
+    })
   }
 }
 </script>
