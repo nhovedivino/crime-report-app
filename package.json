@@ -2,7 +2,7 @@
   "name": "crime-report-app",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "productName": "Online Crime Report",
   "author": "",
   "private": true,
   "scripts": {

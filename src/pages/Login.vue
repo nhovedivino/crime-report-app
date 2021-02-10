@@ -19,11 +19,13 @@
           <md-input v-model="login.password" type="password"></md-input>
         </md-field>
 
-        <a href="/#/register">Register</a>
+        <!-- <a href="/#/register">Register</a> -->
       </div>
 
       <div class="actions md-layout md-alignment-center">
         <md-button class="md-raised md-primary" @click="auth">Log in</md-button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <md-button class="md-raised md-primary" @click="register">Register</md-button>
       </div>
 
       <div class="loading-overlay" v-if="loading">
@@ -58,6 +60,9 @@ export default {
   created () {
   },
   methods: {
+    register () {
+      this.$router.push('register')
+    },
     auth () {
       if (this.login.user !== '' && this.login.password !== '') {
         // your code to login user
