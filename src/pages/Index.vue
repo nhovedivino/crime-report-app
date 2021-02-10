@@ -253,8 +253,9 @@ export default {
               icon: 'done',
               color: 'positive',
               message: 'Report submitted successfully.',
-              position: 'top'
+              position: 'center'
             })
+            this.onReset()
           })
           .catch(error => {
             this.loading = false
