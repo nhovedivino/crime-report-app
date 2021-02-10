@@ -21,8 +21,7 @@ const actions = {
         console.log(response)
         axios.get('/api/user', payload).then(response => {
           console.log(response.data)
-          commit('authLogin', response.data)
-          window.location.reload()
+          commit('authLogin', response.data.data)
         }).catch(error => console.log(error)) // credentials didn't match
       }).catch(error => console.log(error)) // credentials didn't match
     })

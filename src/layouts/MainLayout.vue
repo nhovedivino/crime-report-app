@@ -3,6 +3,7 @@
     <q-header elevated>
       <q-toolbar style="background-color: #21ba45">
         <q-btn
+          v-if="user_details.role ==='Complainant'"
           flat
           dense
           round
@@ -15,7 +16,7 @@
           Online Crime Report
         </q-toolbar-title>
 
-        <q-btn-dropdown stretch icon="person" flat :label="'Hi, ' + user_details.first_name + ' ' + user_details.last_name">
+        <q-btn-dropdown v-if="user_details.role ==='Complainant'" stretch icon="person" flat :label="'Hi, ' + user_details.first_name + ' ' + user_details.last_name">
         <q-list>
           <!-- <q-item v-for="n in 1" :key="`x.${n}`" clickable v-close-popup tabindex="0">
             <q-item-section avatar>

@@ -1,5 +1,19 @@
 <template>
   <div class="q-pa-md flex flex-center">
+    <q-card v-if="user_details.role !=='Complainant'" class="my-card">
+      <q-card-section>
+        User role is not a complainant. Please login to another account.
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-actions>
+        <q-space></q-space>
+        <q-btn @click="logout()" justify-end flat right color="primary">
+          Login
+        </q-btn>
+      </q-card-actions>
+    </q-card>
     <md-content class="md-elevation-3" style="width: 100% !important">
 
       <q-dialog v-model="alert">
@@ -19,7 +33,22 @@
         </q-card>
       </q-dialog>
 
-      <q-card class="my-card">
+      <!-- <q-card v-if="user_details.role !=='Complainant'" class="my-card">
+        <q-card-section>
+          User role is not a complainant. Please login to another account.
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions>
+          <q-space></q-space>
+          <q-btn justify-end flat right color="primary">
+            Reserve
+          </q-btn>
+        </q-card-actions>
+      </q-card> -->
+
+      <q-card class="my-card" v-if="user_details.role ==='Complainant'">
         <q-card-section>
 
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
@@ -184,6 +213,11 @@ export default {
     }
   },
   methods: {
+    logout () {
+      localStorage.removeItem('vuex')
+      this.$store.dispatch('auth/logout')
+      this.$router.push('/')
+    },
     vidChange (event) {
       console.log(event)
       this.videoFile = event.target.files[0]
