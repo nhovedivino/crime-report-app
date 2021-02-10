@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md flex flex-center q-pa-md row items-start q-gutter-md">
     <q-card v-for="(data, index) in missing_persons.data" :key="index" class="my-card">
-      <img src="https://cdn.quasar.dev/img/mountains.jpg">
+      <img :src="data.image_url">
 
       <q-card-section>
         <div class="text-h6">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name }}</div>
@@ -11,6 +11,12 @@
 
       <q-card-section class="q-pt-none">
         {{ data.event_detail }}
+      </q-card-section>
+    </q-card>
+
+    <q-card v-if="missing_persons.data.length === 0">
+      <q-card-section>
+        <div class="text-h6">No data to display.</div>
       </q-card-section>
     </q-card>
   </div>

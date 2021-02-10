@@ -46,7 +46,7 @@
             <q-input
               ref="crime_date"
               label="Name of Missing/Lost and Found Person/Wanted/Suspect"
-              type="date"
+              placeholder="Enter Name"
               v-model="formData.name"
             />
 
@@ -87,14 +87,25 @@
               :rules="[val => !!val || 'Field is required']"
             />
 
-            <q-file @change="imgChange" accept=".jpg, image/*" filled bottom-slots v-model="formData.img" label="Upload Image" counter>
-              <template v-slot:prepend>
-                <q-icon name="cloud_upload" @click.stop />
-              </template>
-              <template v-slot:append>
-                <q-icon name="close" @click.stop="model = null" class="cursor-pointer" />
-              </template>
-            </q-file>
+            <q-input type="file"
+              @change="imgChange"
+              accept=".jpg, image/*"
+              filled
+              bottom-slots
+              v-model="formData.img"
+              hint="Please choose image file type only"
+              counter>
+            </q-input>
+
+            <q-input type="file"
+              @change="vidChange"
+              accept="video/*"
+              filled
+              bottom-slots
+              v-model="formData.video"
+              hint="Please choose video file type only"
+              counter>
+            </q-input>
 
             <!-- <q-file filled bottom-slots v-model="formData.video" label="Upload Video" counter>
               <template v-slot:prepend>
@@ -155,7 +166,15 @@ export default {
         name: ''
       },
       imageFile: '',
+      videoFile: '',
       img: {
+        url: '',
+        thumb_url: '',
+        uploader: '',
+        extension: '',
+        title: ''
+      },
+      video: {
         url: '',
         thumb_url: '',
         uploader: '',
@@ -165,8 +184,14 @@ export default {
     }
   },
   methods: {
+    vidChange (event) {
+      console.log(event)
+      this.videoFile = event.target.files[0]
+      this.video.url = URL.createObjectURL(this.videoFile)
+      this.video.file_type = event.target.files[0].type
+    },
     imgChange (event) {
-      alert('sada')
+      console.log(event)
       this.imageFile = event.target.files[0]
       this.img.url = URL.createObjectURL(this.imageFile)
       this.img.file_type = event.target.files[0].type
@@ -191,6 +216,7 @@ export default {
       formData.append('lat', this.lat)
       formData.append('is_witness', this.is_witness ? 1 : 0)
       formData.append('img', this.imageFile)
+      formData.append('video', this.videoFile)
       // formData.append('video', this.formData.video)
 
       // console.log(formData)
@@ -211,37 +237,37 @@ export default {
       //   // video: this.formData.video
       // }
 
-      // this.$refs.crime_id.validate()
-      // this.$refs.event_detail.validate()
-      // this.$refs.action_taken.validate()
-      // this.$refs.summary.validate()
+      this.$refs.crime_id.validate()
+      this.$refs.event_detail.validate()
+      this.$refs.action_taken.validate()
+      this.$refs.summary.validate()
 
-      // if (this.$refs.crime_id.hasError || this.$refs.event_detail.hasError || this.$refs.action_taken.hasError || this.$refs.summary.hasError) {
-      //   this.formHasError = true
-      // } else {
-      //   this.loading = true
-      //   this.$store.dispatch('crime/reportCrime', { data: formData })
-      //     .then(() => {
-      //       this.loading = false
-      //       this.$q.notify({
-      //         icon: 'done',
-      //         color: 'positive',
-      //         message: 'Report submitted successfully.',
-      //         position: 'top'
-      //       })
-      //     })
-      //     .catch(error => {
-      //       this.loading = false
-      //       this.$q.notify({
-      //         message: 'Something went wrong!',
-      //         color: 'red',
-      //         position: 'top'
-      //       })
-      //       throw new Error(error)
-      //     })
-      // }
+      if (this.$refs.crime_id.hasError || this.$refs.event_detail.hasError || this.$refs.action_taken.hasError || this.$refs.summary.hasError) {
+        this.formHasError = true
+      } else {
+        this.loading = true
+        this.$store.dispatch('crime/reportCrime', { data: formData })
+          .then(() => {
+            this.loading = false
+            this.$q.notify({
+              icon: 'done',
+              color: 'positive',
+              message: 'Report submitted successfully.',
+              position: 'top'
+            })
+          })
+          .catch(error => {
+            this.loading = false
+            this.$q.notify({
+              message: 'Something went wrong!',
+              color: 'red',
+              position: 'top'
+            })
+            throw new Error(error)
+          })
+      }
 
-      // console.log(form)
+      // console.log(formData)
       this.alert = false
     },
     onReset () {
