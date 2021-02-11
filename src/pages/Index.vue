@@ -289,7 +289,7 @@ export default {
               message: 'Report submitted successfully.',
               position: 'center'
             })
-            this.onReset()
+            // this.onReset()
           })
           .catch(error => {
             this.loading = false
@@ -306,16 +306,14 @@ export default {
       this.alert = false
     },
     onReset () {
-      this.formData.crime_id = null
-      this.formData.last_name = null
-      this.formData.birth_date = null
-      this.formData.focus_crime_type = null
-      this.formData.action_taken = null
-      this.formData.summary = null
+      this.formData.crime_id = ''
+      this.formData.focus_crime_type = ''
+      this.formData.action_taken = ''
+      this.formData.summary = ''
+      this.formData.event_detail = ''
 
       this.$refs.crime_id.resetValidation()
-      this.$refs.last_name.resetValidation()
-      this.$refs.birth_date.resetVlidation()
+      this.$refs.event_detail.resetValidation()
       this.$refs.focus_crime_type.resetValidation()
       this.$refs.action_taken.resetValidation()
       this.$refs.summary.resetValidation()
