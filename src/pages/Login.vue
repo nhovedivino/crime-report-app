@@ -2,6 +2,24 @@
   <div class="centered-container">
     <md-content class="md-elevation-3">
 
+      <!-- <q-dialog v-model="alert" persistent>
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">
+              <q-icon name="warning" class="text-orange" style="font-size: 32px;"/> Warning
+            </div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            Please turn on location tracker in your mobile. After you turn on location tracker please tap refresh to login.
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="refresh" color="primary" @click="refresh"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog> -->
+
       <div class="title">
         <img alt="sto nino Logo" src="~assets/sto_nino_logo.png">
         <div class="md-title">Online Crime Report</div>
@@ -50,16 +68,38 @@ export default {
   name: 'Login',
   data () {
     return {
+      alert: true,
       loading: false,
       login: {
         email: '',
         password: ''
-      }
+      },
+      long: '',
+      lat: ''
     }
   },
   created () {
+    this.getLocation()
   },
   methods: {
+    refresh () {
+      window.location.reload()
+    },
+    getLocation () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          this.long = pos.coords.longitude
+          this.lat = pos.coords.latitude
+          this.alert = false
+        })
+      } else {
+        this.$q.notify({
+          message: 'Geolocation is not supported by this browser.',
+          color: 'red',
+          position: 'top'
+        })
+      }
+    },
     register () {
       this.$router.push('register')
     },

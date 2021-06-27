@@ -15,12 +15,13 @@ const mutations = {
 const actions = {
   async getMissingPerson ({ state, commit }, payload) {
     console.log(payload)
-    axios.get('/sanctum/csrf-cookie').then(response => {
-      axios.get('/api/missing-person-list').then(response => {
-        console.log(response.data)
-        commit('getMissingPerson', response.data)
-      }).catch(error => console.log(error))
-    })
+    try {
+      const response = await axios.get('/api/missing-person-list')
+      console.log(response.data)
+      commit('getMissingPerson', response.data)
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 }
 

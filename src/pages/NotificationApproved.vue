@@ -1,13 +1,13 @@
 <template>
   <div class="q-pa-md flex flex-center q-pa-md row items-start q-gutter-md">
     <q-pull-to-refresh @refresh="refresh">
-      <q-card v-for="(data, index) in wanteds.data" :key="index" class="q-mb-md">
+      <q-card v-for="(data, index) in notif_approved.data" :key="index" class="my-card">
         <img :src="data.image_url">
 
         <q-card-section>
           <div class="text-h6">Crime: {{ data.crime.type }}</div>
-          <div class="text-subtitle2">Status: {{ data.status.status }}</div>
-          <div class="text-subtitle2">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name}}</div>
+          <div class="text-subtitle2">Date: {{ data.crime_date }}</div>
+          <div class="text-subtitle2">Address: {{ data.address}}</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -15,7 +15,7 @@
         </q-card-section>
       </q-card>
 
-      <q-card v-if="wanteds.data.length === 0">
+      <q-card v-if="notif_approved.data.length === 0">
         <q-card-section>
           <div class="text-h6">No data to display.</div>
         </q-card-section>
@@ -34,29 +34,34 @@ import { mapGetters } from 'vuex'
 Vue.use(VueMaterial)
 
 export default {
-  name: 'MostWanted',
+  name: 'NotificationApproved',
   data () {
     return {
       //
     }
   },
   created () {
-    this.getWanted()
+    this.getNotifApproved()
+    this.isSeen()
   },
   methods: {
-    getWanted () {
-      this.$store.dispatch('wanted/getWanted')
+    getNotifApproved () {
+      this.$store.dispatch('auth/getNotifApproved')
+    },
+    isSeen () {
+      this.$store.dispatch('notification/isSeenNotif', { is_seen: true })
     },
     refresh (done) {
-      this.$store.dispatch('wanted/getWanted')
+      this.$store.dispatch('auth/getNotifApproved')
         .then(() => {
           done()
         })
     }
   },
   computed: {
-    ...mapGetters('wanted', {
-      wanteds: 'wanteds'
+    ...mapGetters('auth', {
+      notif_approved: 'notif_approved',
+      current_count: 'current_count'
     })
   }
 }

@@ -7,6 +7,7 @@ import crime from './module/crime'
 import lost from './module/lost'
 import missing from './module/missing'
 import wanted from './module/wanted'
+import notification from './module/notification'
 
 // import example from './module-example'
 
@@ -28,7 +29,8 @@ export default function (/* { ssrContext } */) {
       crime,
       lost,
       missing,
-      wanted
+      wanted,
+      notification
     },
     plugins: [
       createPersistedState()

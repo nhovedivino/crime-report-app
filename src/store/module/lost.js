@@ -15,12 +15,13 @@ const mutations = {
 const actions = {
   async getLostAndFound ({ state, commit }, payload) {
     console.log(payload)
-    axios.get('/sanctum/csrf-cookie').then(response => {
-      axios.get('/api/lost-and-found-list', payload).then(response => {
-        console.log(response.data)
-        commit('getLostAndFound', response.data)
-      }).catch(error => console.log(error)) // credentials didn't match
-    })
+    try {
+      const response = await axios.get('/api/lost-and-found-list', payload)
+      console.log(response.data)
+      commit('getLostAndFound', response.data)
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 }
 

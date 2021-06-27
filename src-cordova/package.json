@@ -1,1 +1,32 @@
-{"name":"org.cordova.quasar.app","displayName":"Quasar App","version":"1.0.0","description":"A sample Apache Cordova application that responds to the deviceready event.","main":"index.js","scripts":{"test":"echo \"Error: no test specified\" && exit 1"},"keywords":["ecosystem:cordova"],"author":"Apache Cordova Team","license":"Apache-2.0","dependencies":{"cordova-android":"^8.1.0"},"devDependencies":{"cordova-plugin-whitelist":"1"},"cordova":{"plugins":{"cordova-plugin-whitelist":{}}}}
+{
+  "name": "org.cordova.quasar.app",
+  "displayName": "Online Crime Report",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cordova-android": "^8.1.0",
+    "cordova-plugin-geolocation": "^4.1.0",
+    "cordova-plugin-splashscreen": "^6.0.0",
+    "org.apache.cordova.geolocation": "^0.3.6"
+  },
+  "devDependencies": {
+    "cordova-plugin-whitelist": "1"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      }
+    }
+  }
+}

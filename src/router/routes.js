@@ -15,7 +15,9 @@ const routes = [
       { path: '', component: () => import('pages/Index.vue') },
       { path: '/missing-person', component: () => import('pages/MissingPerson.vue') },
       { path: '/lost-and-found', component: () => import('pages/LostAndFound.vue') },
-      { path: '/most-wanted', component: () => import('pages/MostWanted.vue') }
+      { path: '/most-wanted', component: () => import('pages/MostWanted.vue') },
+      { path: '/notification-approved', component: () => import('pages/NotificationApproved.vue') },
+      { path: '/security-tips', component: () => import('pages/Security.vue') }
     ]
   },
   {

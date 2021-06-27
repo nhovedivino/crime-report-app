@@ -17,6 +17,7 @@
               placeholder="Enter your first name"
               v-model="formData.first_name"
               lazy-rules
+              :disable="loading"
               :rules="[ val => val && val.length > 0 || 'This field is required.']"
             />
 
@@ -25,6 +26,7 @@
               label="Last Name *"
               placeholder="Enter your last name"
               v-model="formData.last_name"
+              :disable="loading"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'This field is required.']"
             />
@@ -35,6 +37,7 @@
               stack-label
               type="date"
               v-model="formData.birth_date"
+              :disable="loading"
               lazy-rules
               hint="Tap the icon to select"
               :rules="[ val => val && val.length > 0 || 'This field is required.']"
@@ -47,6 +50,7 @@
               fill-mask
               unmasked-value
               v-model="formData.contact_no"
+              :disable="loading"
               lazy-rules
               :rules="[ val => val !== null && val !== '' || 'This field is required.']"
             />
@@ -56,6 +60,7 @@
               label="Description "
               placeholder="Enter your description"
               v-model="formData.description"
+              :disable="loading"
             />
             <br>
             <q-input
@@ -63,6 +68,7 @@
               label="Email"
               placeholder="Enter your email"
               v-model="formData.email"
+              :disable="loading"
               lazy-rules
               :rules="[val => !!val || 'This field is required.', isValidEmail,]"
             />
@@ -72,6 +78,7 @@
               label="Password *"
               placeholder="Enter your password"
               v-model="formData.password"
+              :disable="loading"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'This field is required.']"
               :type="isPwd ? 'password' : 'text'">
@@ -89,6 +96,7 @@
               label="Confirm Password *"
               placeholder="Confirm your pasword"
               v-model="formData.password_confirmation"
+              :disable="loading"
               lazy-rules
               :rules="[ val => val && val.length > 0 || 'This field is required.']"
               :type="isPwd ? 'password' : 'text'">
@@ -175,16 +183,17 @@ export default {
           message: 'Password did not match.'
         })
       } else {
-        // this.loading = true
+        this.loading = true
         this.$store.dispatch('auth/register', { data: this.formData })
           .then(() => {
             this.loading = false
             this.$q.notify({
               icon: 'done',
               color: 'positive',
-              message: 'Registered successfully!',
-              position: 'center'
+              message: 'You are now registered!',
+              position: 'top'
             })
+            this.$router.push('/')
           })
           .catch(error => {
             this.loading = false

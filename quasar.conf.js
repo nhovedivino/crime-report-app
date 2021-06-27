@@ -38,7 +38,7 @@ module.exports = function (/* ctx */) {
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
+      // 'roboto-font', // optional, you are not bound to it
       'material-icons' // optional, you are not bound to it
     ],
 
@@ -78,6 +78,14 @@ module.exports = function (/* ctx */) {
       https: false,
       port: 8080,
       open: true // opens browser window automatically
+      // proxy: [
+      //   {
+      //     context: ["/sanctum", "/api"],
+      //     target: "http://127.0.0.1:8000",
+      //     changeOrigin: true,
+      //     cookieDomainRewrite: "localhost"
+      //   }
+      // ]
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -116,8 +124,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
+        name: 'Online Crime Report',
+        short_name: 'Online Crime Report',
         description: 'A Quasar Framework app',
         display: 'standalone',
         orientation: 'portrait',

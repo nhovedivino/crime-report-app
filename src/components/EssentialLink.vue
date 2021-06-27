@@ -2,6 +2,7 @@
   <q-item
     clickable
     :to="link"
+    v-ripple
   >
     <q-item-section
       v-if="icon"

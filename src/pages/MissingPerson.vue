@@ -1,24 +1,26 @@
 <template>
   <div class="q-pa-md flex flex-center q-pa-md row items-start q-gutter-md">
-    <q-card v-for="(data, index) in missing_persons.data" :key="index" class="my-card">
-      <img :src="data.image_url">
+    <q-pull-to-refresh @refresh="refresh">
+      <q-card v-for="(data, index) in missing_persons.data" :key="index" class="q-mb-md">
+        <img :src="data.image_url">
 
-      <q-card-section>
-        <div class="text-h6">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name }}</div>
-        <!-- <div class="text-subtitle2">Status: {{ data.status.status }}</div>
-        <div class="text-subtitle2">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name}}</div> -->
-      </q-card-section>
+        <q-card-section>
+          <div class="text-h6">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name }}</div>
+          <!-- <div class="text-subtitle2">Status: {{ data.status.status }}</div>
+          <div class="text-subtitle2">Reported by: {{ data.prepared.first_name + ' '+ data.prepared.last_name}}</div> -->
+        </q-card-section>
 
-      <q-card-section class="q-pt-none">
-        {{ data.event_detail }}
-      </q-card-section>
-    </q-card>
+        <q-card-section class="q-pt-none">
+          {{ data.event_detail }}
+        </q-card-section>
+      </q-card>
 
-    <q-card v-if="missing_persons.data.length === 0">
-      <q-card-section>
-        <div class="text-h6">No data to display.</div>
-      </q-card-section>
-    </q-card>
+      <q-card v-if="missing_persons.data.length === 0">
+        <q-card-section>
+          <div class="text-h6">No data to display.</div>
+        </q-card-section>
+      </q-card>
+    </q-pull-to-refresh>
   </div>
 </template>
 
@@ -44,6 +46,12 @@ export default {
   methods: {
     getMissingPerson () {
       this.$store.dispatch('missing/getMissingPerson')
+    },
+    refresh (done) {
+      this.$store.dispatch('missing/getMissingPerson')
+        .then(() => {
+          done()
+        })
     },
     customSort (rows, sortBy, descending) {
       const data = [...rows]

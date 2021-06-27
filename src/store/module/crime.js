@@ -15,20 +15,22 @@ const mutations = {
 const actions = {
   async getTypeOfCrimes ({ state, commit }, payload) {
     console.log(payload)
-    axios.get('/sanctum/csrf-cookie').then(response => {
-      axios.get('/api/crime-type').then(response => {
-        console.log(response.data)
-        commit('getTypeOfCrimes', response.data)
-      }).catch(error => console.log(error))
-    })
+    try {
+      const response = await axios.get('/api/crime-type')
+      console.log(response.data)
+      commit('getTypeOfCrimes', response.data)
+    } catch (error) {
+      throw new Error(error)
+    }
   },
   async reportCrime ({ state, commit }, payload) {
     console.log(payload.data)
-    axios.get('/sanctum/csrf-cookie').then(response => {
-      axios.post('/api/report', payload.data).then(response => {
-        console.log(response)
-      }).catch(error => console.log(error)) // credentials didn't match
-    })
+    try {
+      const response = await axios.post('/api/report', payload.data)
+      console.log(response)
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 }
 

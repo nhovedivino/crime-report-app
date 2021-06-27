@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md flex flex-center">
-    <q-card v-if="user_details.role !=='Complainant'" class="my-card">
+    <q-card v-if="user_details.roles[0].name !=='Complainant'" class="my-card">
       <q-card-section>
         User role is not a complainant. Please login to another account.
       </q-card-section>
@@ -14,6 +14,27 @@
         </q-btn>
       </q-card-actions>
     </q-card>
+
+    <q-dialog v-model="login" persistent>
+      <q-card id="card">
+        <q-card-section>
+          <div class="text-h1 text text-center text-poppins hello">
+            Hello {{ user_details.first_name }}!
+          </div>
+          <div class="text-h6 text text-center text-nunito" style="margin-bottom: 8px;">
+            Good to see you here
+          </div><br>
+          <div class="text-h6 text-center">
+            <q-btn v-close-popup @click="changeLogin" class="border-gradient border-gradient-cyan" style="color: #325d94" label="LET'S START" />
+          </div>
+        </q-card-section>
+
+        <!-- <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup @click="changeLogin"/>
+        </q-card-actions> -->
+      </q-card>
+    </q-dialog>
+
     <md-content class="md-elevation-3" style="width: 100% !important">
 
       <q-dialog v-model="alert">
@@ -33,7 +54,7 @@
         </q-card>
       </q-dialog>
 
-      <!-- <q-card v-if="user_details.role !=='Complainant'" class="my-card">
+      <!-- <q-card v-if="user_details.roles[0].name !=='Complainant'" class="my-card">
         <q-card-section>
           User role is not a complainant. Please login to another account.
         </q-card-section>
@@ -48,7 +69,7 @@
         </q-card-actions>
       </q-card> -->
 
-      <q-card class="my-card" v-if="user_details.role ==='Complainant'">
+      <q-card class="my-card" v-if="user_details.roles[0].name ==='Complainant'">
         <q-card-section>
 
           <form @submit.prevent.stop="onSubmit" @reset.prevent.stop="onReset" class="q-gutter-md">
@@ -63,6 +84,7 @@
               :options="crime_type"
               emit-value
               map-options
+              :disable="loading"
               ref="crime_id"
               :dense="dense"
               label="Type of Crime *"
@@ -73,18 +95,36 @@
             />
 
             <q-input
-              ref="crime_date"
-              label="Name of Missing/Lost and Found Person/Wanted/Suspect"
+              ref="name"
+              label="Name of Missing/Lost and Found Items/Wanted/Suspect"
               placeholder="Enter Name"
               v-model="formData.name"
+              :disable="loading"
             />
 
-            <q-input
+            <!-- <q-input
+              ref="address"
+              label="Address"
+              placeholder="Enter Complete Address"
+              v-model="formData.address"
+            /> -->
+
+            <!-- <q-input
               v-if="onChangeValue"
               ref="focus_crime_type"
               label="Focus type of crime *"
               v-model="formData.focus_crime_type"
+            /> -->
+            <q-select
+              v-model="formData.address"
+              :disable="loading"
+              emit-value
+              map-options
+              :options="puroks"
+              label="Address"
             />
+
+            <q-select v-if="onChangeValue" v-model="formData.focus_crime_type" :disable="loading" :options="options" label="Focus type of crime" />
 
             <q-input
               ref="event_detail"
@@ -92,11 +132,12 @@
               type="textarea"
               placeholder="Enter event details"
               v-model="formData.event_detail"
+              :disable="loading"
               lazy-rules
               :rules="[val => !!val || 'Field is required']"
             />
 
-            <q-input
+            <!-- <q-input
               ref="action_taken"
               label="Action Taken"
               type="textarea"
@@ -114,7 +155,7 @@
               v-model="formData.summary"
               lazy-rules
               :rules="[val => !!val || 'Field is required']"
-            />
+            /> -->
 
             <q-input type="file"
               @change="imgChange"
@@ -122,16 +163,18 @@
               filled
               bottom-slots
               v-model="formData.img"
+              :disable="loading"
               hint="Please choose image file type only"
               counter>
             </q-input>
 
             <q-input type="file"
               @change="vidChange"
-              accept="video/*"
+              accept=".mp4, video/*"
               filled
               bottom-slots
               v-model="formData.video"
+              :disable="loading"
               hint="Please choose video file type only"
               counter>
             </q-input>
@@ -174,6 +217,20 @@ export default {
   name: 'PageIndex',
   data () {
     return {
+      welcome: false,
+      options: [
+        'Theft', 'Rape', 'Robbery', 'Homicide', 'Murder', 'Physical Injury', 'Motor napping and carnapping'
+      ],
+      puroks: [
+        'Purok Atis, Brgy. Sto. Niño',
+        'Purok Caimito, Brgy. Sto. Niño',
+        'Purok Chico, Brgy. Sto. Niño',
+        'Purok Durian, Brgy. Sto. Niño',
+        'Purok Mangga, Brgy. Sto. Niño',
+        'Purok Santol, Brgy. Sto. Niño',
+        'Purok Tambis, Brgy. Sto. Niño',
+        'Purok Ubas, Brgy. Sto. Niño'
+      ],
       is_witness: false,
       alert: false,
       isPwd: true,
@@ -189,6 +246,7 @@ export default {
         focus_crime_type: '',
         event_detail: '',
         action_taken: '',
+        address: '',
         summary: '',
         img: '',
         video: '',
@@ -213,6 +271,12 @@ export default {
     }
   },
   methods: {
+    getNotifApproved () {
+      this.$store.dispatch('auth/getNotifApproved')
+    },
+    changeLogin () {
+      this.$store.dispatch('auth/changeLogin')
+    },
     logout () {
       localStorage.removeItem('vuex')
       this.$store.dispatch('auth/logout')
@@ -241,6 +305,7 @@ export default {
       formData.append('complaint_id', this.user_details.id)
       formData.append('reported_by', this.user_details.first_name + ' ' + this.user_details.last_name)
       formData.append('name', this.formData.name)
+      formData.append('address', this.formData.address)
       formData.append('prepared_id', this.user_details.id)
       formData.append('focus_crime_type', this.formData.focus_crime_type)
       formData.append('event_detail', this.formData.event_detail)
@@ -273,22 +338,22 @@ export default {
 
       this.$refs.crime_id.validate()
       this.$refs.event_detail.validate()
-      this.$refs.action_taken.validate()
-      this.$refs.summary.validate()
+      // this.$refs.action_taken.validate()
+      // this.$refs.summary.validate()
 
-      if (this.$refs.crime_id.hasError || this.$refs.event_detail.hasError || this.$refs.action_taken.hasError || this.$refs.summary.hasError) {
+      if (this.$refs.crime_id.hasError || this.$refs.event_detail.hasError) {
         this.formHasError = true
       } else {
         this.loading = true
         this.$store.dispatch('crime/reportCrime', { data: formData })
           .then(() => {
-            this.loading = false
             this.$q.notify({
               icon: 'done',
               color: 'positive',
               message: 'Report submitted successfully.',
               position: 'center'
             })
+            this.loading = false
             // this.onReset()
           })
           .catch(error => {
@@ -339,10 +404,12 @@ export default {
   created () {
     this.getLocation()
     this.getTypeOfCrimes()
+    this.getNotifApproved()
   },
   computed: {
     ...mapGetters('auth', {
-      user_details: 'user_details'
+      user_details: 'user_details',
+      login: 'login'
     }),
     ...mapGetters('crime', {
       crime_type: 'crime_type'
@@ -358,6 +425,56 @@ export default {
 </script>
 
 <style lang="scss" scope>
+$font: 'Poppins', sans-serif;
+$font-roboto: 'Roboto';
+$font-nunito: 'Nunito';
+
+::selection { background-color: #C3CFE2; }
+
+.text {
+  background: linear-gradient(to left, #30CFD0 0%, #330867 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hello {
+  font-size: 50pt;
+  font-weight: 600;
+}
+
+.text-roboto {
+  font-family: $font-roboto;
+}
+
+.text-poppins {
+  font-family: $font;
+}
+
+.text-roboto {
+  font-family: $font-roboto;
+}
+
+.text-nunito {
+  font-family: $font-nunito;
+}
+
+.text-upper {
+  text-transform: uppercase;
+}
+
+.border-gradient {
+  border: 5px solid;
+  border-image-slice: 1;
+  border-width: 3px;
+}
+.border-gradient-cyan {
+  border-image-source: linear-gradient(to left, #30CFD0 0%, #330867 100%);
+}
+
+#card, .q-card__section--vert {
+  padding: 20px !important;
+}
+
 .centered-container {
   display: flex;
   align-items: center;
